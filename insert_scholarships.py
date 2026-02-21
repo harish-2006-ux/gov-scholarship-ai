@@ -1,0 +1,174 @@
+# insert_scholarships.py
+# ------------------------------------------------------------
+# Insert the 10 scholarships described in the prompt
+# ------------------------------------------------------------
+
+from sqlalchemy import create_engine, Column, Integer, String, Text, Float
+from sqlalchemy.orm import declarative_base, sessionmaker
+
+# ---------- 1️⃣  Database & ORM setup ----------
+engine = create_engine("sqlite:///database.db", echo=True)   # change the URI if you use a different DB
+Base = declarative_base()
+
+class Scholarship(Base):
+    __tablename__ = "scholarships"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(255), nullable=False)
+    description = Column(Text)
+    min_age = Column(Integer)
+    max_age = Column(Integer)
+    max_income = Column(Float)
+    caste_allowed = Column(String(100))
+    gender_allowed = Column(String(50))
+    course_allowed = Column(String(50))
+    district_allowed = Column(String(100))
+    required_documents = Column(Text)
+    official_url = Column(String(500))
+
+# Create the table(s)
+Base.metadata.create_all(engine)
+
+# ---------- 2️⃣  Prepare the data ----------
+scholarships = [
+    Scholarship(
+        name="Vidyasiri Scholarship (BCM – Karnataka)",
+        description="Scholarship for OBC, SC, ST students pursuing PUC in Karnataka.",
+        min_age=16,
+        max_age=25,
+        max_income=250_000.0,
+        caste_allowed="OBC,SC,ST",
+        gender_allowed="Any",
+        course_allowed="PUC",
+        district_allowed="All",
+        required_documents="Income certificate, Caste certificate, Previous marksheet, Bank account details",
+        official_url="https://karnataka.gov.in/vidyasiri"
+    ),
+    Scholarship(
+        name="Fee Reimbursement Scheme (SC/ST – Karnataka)",
+        description="Fee reimbursement for SC/ST students enrolled in degree courses in Karnataka.",
+        min_age=16,
+        max_age=30,
+        max_income=250_000.0,
+        caste_allowed="SC,ST",
+        gender_allowed="Any",
+        course_allowed="Degree",
+        district_allowed="All",
+        required_documents="Income certificate, Caste certificate, Admission fee receipt, Bank account details",
+        official_url="https://karnataka.gov.in/feereimbursement"
+    ),
+    Scholarship(
+        name="Minority Scholarship (Karnataka State)",
+        description="Scholarship for minority community students in Karnataka (PUC/Degree).",
+        min_age=16,
+        max_age=28,
+        max_income=250_000.0,
+        caste_allowed="Any",
+        gender_allowed="Any",
+        course_allowed="Both",
+        district_allowed="All",
+        required_documents="Income certificate, Minority certificate, Previous marksheet, Bank account details",
+        official_url="https://karnataka.gov.in/minority"
+    ),
+    Scholarship(
+        name="NSP Post Matric Scholarship (SC – Central)",
+        description="Central scholarship for SC students pursuing post‑matriculation courses.",
+        min_age=16,
+        max_age=30,
+        max_income=300_000.0,
+        caste_allowed="SC",
+        gender_allowed="Any",
+        course_allowed="Both",
+        district_allowed="All",
+        required_documents="Income certificate, Caste certificate, Previous marksheet, Bank account details, Aadhaar",
+        official_url="https://scholarships.gov.in/nsp-sc"
+    ),
+    Scholarship(
+        name="NSP Post Matric Scholarship (ST – Central)",
+        description="Central scholarship for ST students pursuing post‑matriculation courses.",
+        min_age=16,
+        max_age=30,
+        max_income=300_000.0,
+        caste_allowed="ST",
+        gender_allowed="Any",
+        course_allowed="Both",
+        district_allowed="All",
+        required_documents="Income certificate, Caste certificate, Previous marksheet, Bank account details, Aadhaar",
+        official_url="https://scholarships.gov.in/nsp-st"
+    ),
+    Scholarship(
+        name="OBC Post Matric Scholarship (Central)",
+        description="Central scholarship for OBC students pursuing post‑matriculation courses.",
+        min_age=16,
+        max_age=30,
+        max_income=250_000.0,
+        caste_allowed="OBC",
+        gender_allowed="Any",
+        course_allowed="Both",
+        district_allowed="All",
+        required_documents="Income certificate, Caste certificate, Previous marksheet, Bank account details",
+        official_url="https://scholarships.gov.in/obc"
+    ),
+    Scholarship(
+        name="Merit Cum Means Scholarship (Minority – Central)",
+        description="Merit‑cum‑means scholarship for minority students pursuing degree programmes.",
+        min_age=17,
+        max_age=30,
+        max_income=250_000.0,
+        caste_allowed="Any",
+        gender_allowed="Any",
+        course_allowed="Degree",
+        district_allowed="All",
+        required_documents="Income certificate, Minority certificate, Merit marksheet, Bank account details",
+        official_url="https://scholarships.gov.in/mcm"
+    ),
+    Scholarship(
+        name="Karnataka Labour Welfare Scholarship",
+        description="Scholarship for wards of registered labour in Karnataka.",
+        min_age=16,
+        max_age=25,
+        max_income=300_000.0,
+        caste_allowed="Any",
+        gender_allowed="Any",
+        course_allowed="Both",
+        district_allowed="All",
+        required_documents="Labour card, Income certificate, Previous marksheet, Bank account details",
+        official_url="https://karnataka.gov.in/labourwelfare"
+    ),
+    Scholarship(
+        name="Pragati Scholarship for Girls (AICTE)",
+        description="Scholarship for girl students admitted to AICTE‑approved degree programmes.",
+        min_age=17,
+        max_age=30,
+        max_income=800_000.0,
+        caste_allowed="Any",
+        gender_allowed="Female",
+        course_allowed="Degree",
+        district_allowed="All",
+        required_documents="Income certificate, Admission letter, Previous marksheet, Bank account details, Aadhaar",
+        official_url="https://www.aicte-pragati.gov.in"
+    ),
+    Scholarship(
+        name="Saksham Scholarship (Divyang Students – AICTE)",
+        description="Scholarship for divyang (disabled) students pursuing degree programmes.",
+        min_age=17,
+        max_age=30,
+        max_income=800_000.0,
+        caste_allowed="Any",
+        gender_allowed="Any",
+        course_allowed="Degree",
+        district_allowed="All",
+        required_documents="Disability certificate, Income certificate, Admission letter, Bank account details",
+        official_url="https://www.aicte-saksham.gov.in"
+    ),
+]
+
+# ---------- 3️⃣  Persist to DB ----------
+Session = sessionmaker(bind=engine)
+session = Session()
+
+session.add_all(scholarships)
+session.commit()
+session.close()
+
+print("✅  Successfully inserted 10 scholarship records into the database.")

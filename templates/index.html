@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Karnataka Scholarship Finder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 60%;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .result-card {
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #fafafa;
+        }
+
+        .apply-btn {
+            display: inline-block;
+            padding: 8px 12px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .apply-btn:hover {
+            background-color: #1e7e34;
+        }
+
+        .no-result {
+            color: red;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Karnataka Scholarship Eligibility Checker</h2>
+
+    <form id="scholarshipForm">
+        <label>Age:</label>
+        <input type="number" id="age" required>
+
+        <label>Annual Income:</label>
+        <input type="number" id="income" required>
+
+        <label>Caste:</label>
+        <select id="caste">
+            <option value="General">General</option>
+            <option value="OBC">OBC</option>
+            <option value="SC">SC</option>
+            <option value="ST">ST</option>
+        </select>
+
+        <label>Gender:</label>
+        <select id="gender">
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+        </select>
+
+        <label>Course:</label>
+        <select id="course">
+            <option value="PUC">PUC</option>
+            <option value="Degree">Degree</option>
+        </select>
+
+        <label>District:</label>
+            <select id="district">
+                <option value="Bengaluru Urban">Bengaluru Urban</option>
+                <option value="Bengaluru Rural">Bengaluru Rural</option>
+                <option value="Mysuru">Mysuru</option>
+                <option value="Tumakuru">Tumakuru</option>
+                <option value="Dharwad">Dharwad</option>
+                <option value="Belagavi">Belagavi</option>
+                <option value="Kalaburagi">Kalaburagi</option>
+                <option value="Shivamogga">Shivamogga</option>
+                <option value="Udupi">Udupi</option>
+                <option value="Dakshina Kannada">Dakshina Kannada</option>
+            </select>
+
+        <button type="submit">Check Eligibility</button>
+    </form>
+
+    <div id="results" style="margin-top:30px;"></div>
+</div>
+
+<script>
+document.getElementById("scholarshipForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const data = {
+        age: parseInt(document.getElementById("age").value),
+        income: parseFloat(document.getElementById("income").value),
+        caste: document.getElementById("caste").value,
+        gender: document.getElementById("gender").value,
+        course: document.getElementById("course").value,
+        district: document.getElementById("district").value
+    };
+    fetch("/recommend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        let output = "";
+
+        if(result.length === 0) {
+            output = "<p class='no-result'>No eligible scholarships found.</p>";
+        } else {
+            result.forEach(item => {
+                output += `
+                    <div class="result-card">
+                        <h4>${item.name} (Score: ${item.score})</h4>
+                        <p><strong>Description:</strong> ${item.description}</p>
+                        <p><strong>Required Documents:</strong> ${item.documents}</p>
+                        <a class="apply-btn" href="${item.url}" target="_blank">Apply Now</a>
+                    </div>
+                `;
+            });
+        }
+
+        document.getElementById("results").innerHTML = output;
+    });
+});
+</script>
+
+</body>
+</html>
