@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Karnataka Scholarship Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .signup-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            width: 100%;
+            max-width: 950px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .signup-left {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            flex: 1;
+            min-width: 300px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .signup-left h1 {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .signup-left p {
+            font-size: 1rem;
+            opacity: 0.9;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .signup-features {
+            list-style: none;
+        }
+
+        .signup-features li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+
+        .signup-features li::before {
+            content: "✓";
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            margin-right: 12px;
+            font-weight: bold;
+        }
+
+        .signup-right {
+            padding: 35px;
+            flex: 1.2;
+            min-width: 350px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .signup-right h2 {
+            font-size: 1.6rem;
+            color: #333;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .signup-right > p {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #333;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background: #f9f9f9;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .signup-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .signup-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 18px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 18px 0;
+            color: #999;
+            font-size: 0.8rem;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: #e1e1e1;
+        }
+
+        .divider span {
+            padding: 0 12px;
+        }
+
+        .social-signup {
+            display: flex;
+            gap: 12px;
+        }
+
+        .social-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: #333;
+        }
+
+        .social-btn:hover {
+            border-color: #667eea;
+            background: #f9f9f9;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 768px) {
+            .signup-left {
+                display: none;
+            }
+            
+            .signup-right {
+                max-height: none;
+                overflow-y: visible;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <div class="signup-left">
+            <h1>🎓 Karnataka Scholarship Portal</h1>
+            <p>Access government scholarships and transform your educational journey. Register now to get personalized scholarship recommendations.</p>
+            <ul class="signup-features">
+                <li>Apply for 50+ Government Scholarships</li>
+                <li>Instant Eligibility Verification</li>
+                <li>Direct Portal Links for Application</li>
+                <li>Real-time Application Status</li>
+                <li>DigiLocker Document Integration</li>
+            </ul>
+        </div>
+        <div class="signup-right">
+            <h2>Create Account</h2>
+            <p>Fill in your details to get started</p>
+            
+            <div id="alertContainer"></div>
+            
+            <form id="signupForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="first_name">First Name *</label>
+                        <input type="text" id="first_name" placeholder="First name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="last_name">Last Name</label>
+                        <input type="text" id="last_name" placeholder="Last name">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" placeholder="your@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" placeholder="Enter phone number">
+                </div>
+                
+                <div class="form-group">
+                    <label for="dob">Date of Birth</label>
+                    <input type="date" id="dob">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="gender">Gender</label>
+                        <select id="gender">
+                            <option value="">Select</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="caste">Caste Category</label>
+                        <select id="caste">
+                            <option value="">Select</option>
+                            <option value="General">General</option>
+                            <option value="OBC">OBC</option>
+                            <option value="SC">SC</option>
+                            <option value="ST">ST</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="district">District</label>
+                    <select id="district">
+                        <option value="">Select District</option>
+                        <option value="Bagalkot">Bagalkot</option>
+                        <option value="Bangalore Rural">Bangalore Rural</option>
+                        <option value="Bangalore Urban">Bangalore Urban</option>
+                        <option value="Belagavi">Belagavi</option>
+                        <option value="Ballari">Ballari</option>
+                        <option value="Bidar">Bidar</option>
+                        <option value="Chikkaballapur">Chikkaballapur</option>
+                        <option value="Chikkamagaluru">Chikkamagaluru</option>
+                        <option value="Chitradurga">Chitradurga</option>
+                        <option value="Dakshina Kannada">Dakshina Kannada</option>
+                        <option value="Davanagere">Davanagere</option>
+                        <option value="Dharwad">Dharwad</option>
+                        <option value="Gadag">Gadag</option>
+                        <option value="Kalaburagi">Kalaburagi</option>
+                        <option value="Hassan">Hassan</option>
+                        <option value="Haveri">Haveri</option>
+                        <option value="Hubli-Dharwad">Hubli-Dharwad</option>
+                        <option value="Kolar">Kolar</option>
+                        <option value="Koppal">Koppal</option>
+                        <option value="Mandya">Mandya</option>
+                        <option value="Mysuru">Mysuru</option>
+                        <option value="Raichur">Raichur</option>
+                        <option value="Ramanagara">Ramanagara</option>
+                        <option value="Shivamogga">Shivamogga</option>
+                        <option value="Tumakuru">Tumakuru</option>
+                        <option value="Udupi">Udupi</option>
+                        <option value="Uttara Kannada">Uttara Kannada</option>
+                        <option value="Vijayanagar">Vijayanagar</option>
+                        <option value="Yadgir">Yadgir</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password *</label>
+                    <input type="password" id="password" placeholder="Create password (min 6 chars)" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirm_password">Confirm Password *</label>
+                    <input type="password" id="confirm_password" placeholder="Confirm password" required>
+                </div>
+
+                <button type="submit" class="signup-btn">Create Account</button>
+            </form>
+
+            <div class="divider">
+                <span>or continue with</span>
+            </div>
+
+            <div class="social-signup">
+                <button type="button" class="social-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    Google
+                </button>
+                <button type="button" class="social-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    GitHub
+                </button>
+            </div>
+
+            <p class="login-link">
+                Already have an account? <a href="/">Sign In</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("signupForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirm_password").value;
+            const alertContainer = document.getElementById("alertContainer");
+            
+            if (password !== confirmPassword) {
+                alertContainer.innerHTML = '<div class="alert alert-error">Passwords do not match!</div>';
+                return;
+            }
+            
+            if (password.length < 6) {
+                alertContainer.innerHTML = '<div class="alert alert-error">Password must be at least 6 characters!</div>';
+                return;
+            }
+            
+            const formData = {
+                first_name: document.getElementById("first_name").value,
+                last_name: document.getElementById("last_name").value,
+                email: document.getElementById("email").value,
+                phone: document.getElementById("phone").value,
+                dob: document.getElementById("dob").value,
+                gender: document.getElementById("gender").value,
+                caste: document.getElementById("caste").value,
+                district: document.getElementById("district").value,
+                password: password
+            };
+            
+            fetch("/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alertContainer.innerHTML = '<div class="alert alert-success">' + data.message + ' Redirecting to home...</div>';
+                    setTimeout(() => {
+                        window.location.href = "/";
+                    }, 1500);
+                } else {
+                    alertContainer.innerHTML = '<div class="alert alert-error">' + data.message + '</div>';
+                }
+            })
+            .catch(error => {
+                alertContainer.innerHTML = '<div class="alert alert-error">An error occurred. Please try again.</div>';
+            });
+        });
+    </script>
+</body>
+</html>

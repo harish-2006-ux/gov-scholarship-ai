@@ -1,5 +1,6 @@
-from sqlalchemy import create_engine, Column, Integer, String, Text, Float
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy import create_engine, Column, Integer, String, Text, Float, DateTime, Boolean, ForeignKey
+from sqlalchemy.orm import declarative_base, sessionmaker, relationship
+from datetime import datetime
 
 engine = create_engine("sqlite:///database.db", echo=True)
 Base = declarative_base()
@@ -19,5 +20,49 @@ class Scholarship(Base):
     district_allowed = Column(String(100))
     required_documents = Column(Text)
     official_url = Column(String(500))
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True)
+    first_name = Column(String(100), nullable=False)
+    last_name = Column(String(100))
+    email = Column(String(255), unique=True, nullable=False)
+    phone = Column(String(20))
+    password_hash = Column(String(255), nullable=False)
+    
+    # Profile fields
+    date_of_birth = Column(DateTime)
+    gender = Column(String(20))
+    caste = Column(String(50))
+    district = Column(String(100))
+    income = Column(Float, default=0)
+    course = Column(String(50))  # School, PUC, Degree
+    
+    # DigiLocker integration
+    digilocker_linked = Column(Boolean, default=False)
+    digilocker_id = Column(String(100))
+    
+    # Timestamps
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationships
+    applications = relationship("Application", back_populates="user")
+
+class Application(Base):
+    __tablename__ = "applications"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    scholarship_id = Column(Integer, ForeignKey("scholarships.id"))
+    status = Column(String(50), default="Applied")  # Applied, Awaited, Approved, Rejected
+    application_date = Column(DateTime, default=datetime.utcnow)
+    documents_verified = Column(Boolean, default=False)
+    notes = Column(Text)
+    
+    # Relationships
+    user = relationship("User", back_populates="applications")
+    scholarship = relationship("Scholarship")
 
 Session = sessionmaker(bind=engine)

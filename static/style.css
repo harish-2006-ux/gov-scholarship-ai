@@ -1,0 +1,145 @@
+/* CLEAN MODERN BLUE THEME */
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #f4f7fb;
+    color: #1f2937;
+}
+
+/* Container */
+.container {
+    width: 60%;
+    margin: 40px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 102, 255, 0.08);
+}
+
+/* Title */
+h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #2563eb;
+}
+
+/* Labels */
+label {
+    font-weight: 600;
+    display: block;
+    margin-top: 12px;
+}
+
+/* Inputs */
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    background: #f9fafb;
+    transition: 0.2s;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* Button */
+button {
+    width: 100%;
+    padding: 12px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: #1e40af;
+}
+
+/* Result Cards */
+.result-card {
+    margin-top: 20px;
+    padding: 18px;
+    background: #ffffff;
+    border-left: 4px solid #2563eb;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(0, 102, 255, 0.08);
+    transition: 0.2s;
+}
+
+.result-card:hover {
+    transform: translateY(-3px);
+}
+
+/* Rank */
+.rank {
+    color: #2563eb;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+/* Apply Button */
+.apply-btn {
+    display: inline-block;
+    padding: 8px 14px;
+    background: #10b981;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    margin-top: 10px;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.apply-btn:hover {
+    background: #059669;
+}
+
+/* No Result */
+.no-result {
+    color: #dc2626;
+    text-align: center;
+    font-weight: 600;
+    margin-top: 20px;
+}
+
+/* Portal Section */
+.portal-section {
+    margin: 10px 0;
+    padding: 8px;
+    background: #f0f9ff;
+    border-radius: 6px;
+}
+
+.portal-name {
+    margin-right: 10px;
+    font-weight: 600;
+}
+
+.verified-badge {
+    color: #059669;
+    font-weight: 600;
+}
+
+/* Portal Instruction */
+.portal-instruction {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 8px;
+    padding: 8px;
+    background: #fef3c7;
+    border-radius: 6px;
+    border-left: 3px solid #f59e0b;
+}

@@ -1,138 +1,528 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Karnataka Scholarship Finder</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karnataka Scholarship Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f9;
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
         }
 
         .container {
-            width: 60%;
-            margin: 40px auto;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
             background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-
-        h2 {
-            text-align: center;
+            border-radius: 20px;
+            padding: 25px 30px;
             margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
-        label {
-            font-weight: bold;
+        .header h1 {
+            font-size: 28px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        input, select {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .user-greeting {
+            color: #333;
+            font-weight: 500;
+            margin-right: 10px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-outline {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .form-container h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 22px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
             margin-bottom: 15px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
         }
 
-        button {
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
             width: 100%;
-            padding: 10px;
-            background-color: #007bff;
+            padding: 14px 16px;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: #f9f9f9;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
             font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
         }
 
-        button:hover {
-            background-color: #0056b3;
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        #results {
+            margin-top: 30px;
         }
 
         .result-card {
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            padding: 15px;
-            margin-bottom: 15px;
-            background-color: #fafafa;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border-left: 5px solid #667eea;
+        }
+
+        .result-card h3 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .rank {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .rank-s { background: #ffd700; color: #000; }
+        .rank-a { background: #28a745; color: white; }
+        .rank-b { background: #17a2b8; color: white; }
+        .rank-c { background: #6c757d; color: white; }
+
+        .result-card p {
+            color: #666;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .result-card strong {
+            color: #333;
+        }
+
+        .portal-section {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .portal-name {
+            padding: 6px 12px;
+            background: #e7f3ff;
+            color: #0066cc;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .verified-badge {
+            padding: 6px 12px;
+            background: #d4edda;
+            color: #155724;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
         }
 
         .apply-btn {
             display: inline-block;
-            padding: 8px 12px;
-            background-color: #28a745;
+            padding: 12px 24px;
+            background: #28a745;
             color: white;
             text-decoration: none;
-            border-radius: 5px;
+            border-radius: 10px;
+            font-weight: 600;
             margin-top: 10px;
+            transition: all 0.3s ease;
         }
 
         .apply-btn:hover {
-            background-color: #1e7e34;
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .applied-badge {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #6c757d;
+            color: white;
+            border-radius: 10px;
+            font-weight: 600;
+            margin-top: 10px;
+            cursor: not-allowed;
+        }
+
+        .portal-instruction {
+            font-size: 12px;
+            color: #666;
+            margin-top: 8px;
         }
 
         .no-result {
-            color: red;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
             text-align: center;
+            color: #666;
+            font-size: 16px;
+        }
+
+        /* Login Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-header h2 {
+            color: #333;
+            font-size: 24px;
+        }
+
+        .modal-close {
+            float: right;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .header-actions {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Karnataka Scholarship Eligibility Checker</h2>
+    <div class="header">
+        <h1>🎓 Karnataka Scholarship Portal</h1>
+        <div class="header-actions">
+            {% if user_logged_in %}
+                <span class="user-greeting">Welcome, {{ session.get('user_name', 'User') }}!</span>
+                <a href="/profile" class="btn btn-outline">👤 My Profile</a>
+                <a href="/logout" class="btn btn-primary">🚪 Logout</a>
+            {% else %}
+                <button onclick="showLoginModal()" class="btn btn-outline">🔑 Login</button>
+                <a href="/signup" class="btn btn-primary">📝 Sign Up</a>
+            {% endif %}
+        </div>
+    </div>
 
-    <form id="scholarshipForm">
-        <label>Age:</label>
-        <input type="number" id="age" required>
+    <div class="form-container">
+        <h2>🔍 Find Eligible Scholarships</h2>
+        
+        <form id="scholarshipForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Age</label>
+                    <input type="number" id="age" required min="1" max="100" placeholder="Enter your age">
+                </div>
 
-        <label>Annual Income:</label>
-        <input type="number" id="income" required>
+                <div class="form-group">
+                    <label>Annual Income (₹)</label>
+                    <input type="number" id="income" required min="0" placeholder="Enter annual income">
+                </div>
 
-        <label>Caste:</label>
-        <select id="caste">
-            <option value="General">General</option>
-            <option value="OBC">OBC</option>
-            <option value="SC">SC</option>
-            <option value="ST">ST</option>
-        </select>
+                <div class="form-group">
+                    <label>Caste</label>
+                    <select id="caste">
+                        <option value="General">General</option>
+                        <option value="OBC">OBC</option>
+                        <option value="SC">SC</option>
+                        <option value="ST">ST</option>
+                    </select>
+                </div>
 
-        <label>Gender:</label>
-        <select id="gender">
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-        </select>
+                <div class="form-group">
+                    <label>Gender</label>
+                    <select id="gender">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
 
-        <label>Course:</label>
-        <select id="course">
-            <option value="PUC">PUC</option>
-            <option value="Degree">Degree</option>
-        </select>
+                <div class="form-group">
+                    <label>Course</label>
+                    <select id="course">
+                        <option value="School">School (Class 1-10)</option>
+                        <option value="PUC">PUC</option>
+                        <option value="Degree">Degree</option>
+                    </select>
+                </div>
 
-        <label>District:</label>
-            <select id="district">
-                <option value="Bengaluru Urban">Bengaluru Urban</option>
-                <option value="Bengaluru Rural">Bengaluru Rural</option>
-                <option value="Mysuru">Mysuru</option>
-                <option value="Tumakuru">Tumakuru</option>
-                <option value="Dharwad">Dharwad</option>
-                <option value="Belagavi">Belagavi</option>
-                <option value="Kalaburagi">Kalaburagi</option>
-                <option value="Shivamogga">Shivamogga</option>
-                <option value="Udupi">Udupi</option>
-                <option value="Dakshina Kannada">Dakshina Kannada</option>
-            </select>
+                <div class="form-group">
+                    <label>District</label>
+                    <select id="district">
+                        <option value="Bagalkot">Bagalkot</option>
+                        <option value="Bangalore Rural">Bangalore Rural</option>
+                        <option value="Bangalore Urban">Bangalore Urban</option>
+                        <option value="Belagavi">Belagavi</option>
+                        <option value="Ballari">Ballari</option>
+                        <option value="Bidar">Bidar</option>
+                        <option value="Chikkaballapur">Chikkaballapur</option>
+                        <option value="Chikkamagaluru">Chikkamagaluru</option>
+                        <option value="Chitradurga">Chitradurga</option>
+                        <option value="Dakshina Kannada">Dakshina Kannada</option>
+                        <option value="Davanagere">Davanagere</option>
+                        <option value="Dharwad">Dharwad</option>
+                        <option value="Gadag">Gadag</option>
+                        <option value="Kalaburagi">Kalaburagi</option>
+                        <option value="Hassan">Hassan</option>
+                        <option value="Haveri">Haveri</option>
+                        <option value="Hubli-Dharwad">Hubli-Dharwad</option>
+                        <option value="Kolar">Kolar</option>
+                        <option value="Koppal">Koppal</option>
+                        <option value="Mandya">Mandya</option>
+                        <option value="Mysuru">Mysuru</option>
+                        <option value="Raichur">Raichur</option>
+                        <option value="Ramanagara">Ramanagara</option>
+                        <option value="Shivamogga">Shivamogga</option>
+                        <option value="Tumakuru">Tumakuru</option>
+                        <option value="Udupi">Udupi</option>
+                        <option value="Uttara Kannada">Uttara Kannada</option>
+                        <option value="Vijayanagar">Vijayanagar</option>
+                        <option value="Yadgir">Yadgir</option>
+                    </select>
+                </div>
+            </div>
 
-        <button type="submit">Check Eligibility</button>
-    </form>
+            <button type="submit" class="submit-btn">🔍 Scan Eligibility</button>
+        </form>
 
-    <div id="results" style="margin-top:30px;"></div>
+        <div id="results"></div>
+    </div>
+</div>
+
+<!-- Login Modal -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeLoginModal()">&times;</span>
+        <div class="modal-header">
+            <h2>🔑 Login</h2>
+        </div>
+        <div id="loginAlert"></div>
+        <form id="loginForm">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="loginEmail" required placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="loginPassword" required placeholder="Enter your password">
+            </div>
+            <button type="submit" class="submit-btn">Login</button>
+        </form>
+        <p style="text-align: center; margin-top: 15px;">
+            Don't have an account? <a href="/signup" style="color: #667eea;">Sign Up</a>
+        </p>
+    </div>
 </div>
 
 <script>
+function showLoginModal() {
+    document.getElementById('loginModal').classList.add('active');
+}
+
+function closeLoginModal() {
+    document.getElementById('loginModal').classList.remove('active');
+}
+
+document.getElementById("loginForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    
+    const data = {
+        email: document.getElementById("loginEmail").value,
+        password: document.getElementById("loginPassword").value
+    };
+    
+    fetch("/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById("loginAlert").innerHTML = '<div class="alert alert-success">Login successful! Reloading...</div>';
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            document.getElementById("loginAlert").innerHTML = '<div class="alert alert-error">' + data.message + '</div>';
+        }
+    });
+});
+
 document.getElementById("scholarshipForm").addEventListener("submit", function(e) {
     e.preventDefault();
 
@@ -144,6 +534,7 @@ document.getElementById("scholarshipForm").addEventListener("submit", function(e
         course: document.getElementById("course").value,
         district: document.getElementById("district").value
     };
+
     fetch("/recommend", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -154,15 +545,32 @@ document.getElementById("scholarshipForm").addEventListener("submit", function(e
         let output = "";
 
         if(result.length === 0) {
-            output = "<p class='no-result'>No eligible scholarships found.</p>";
+            output = "<div class='no-result'>❌ No Eligible Scholarships Found</div>";
         } else {
             result.forEach(item => {
+                let rankClass = "rank-c";
+                let rankText = "C-Rank";
+                if(item.score >= 5) { rankClass = "rank-s"; rankText = "S-Rank"; }
+                else if(item.score == 4) { rankClass = "rank-a"; rankText = "A-Rank"; }
+                else if(item.score == 3) { rankClass = "rank-b"; rankText = "B-Rank"; }
+
                 output += `
                     <div class="result-card">
-                        <h4>${item.name} (Score: ${item.score})</h4>
-                        <p><strong>Description:</strong> ${item.description}</p>
-                        <p><strong>Required Documents:</strong> ${item.documents}</p>
-                        <a class="apply-btn" href="${item.url}" target="_blank">Apply Now</a>
+                        <h3>${item.name}</h3>
+                        <span class="rank ${rankClass}">${rankText} | Score: ${item.score}</span>
+                        <p><strong>Description:</strong> ${item.description || 'N/A'}</p>
+                        <p><strong>Required Documents:</strong> ${item.documents || 'N/A'}</p>
+
+                        <div class="portal-section">
+                            <span class="portal-name">🟦 ${item.portal}</span>
+                            <span class="verified-badge">🟢 Official Portal</span>
+                        </div>
+
+                        ${item.already_applied ? 
+                            '<span class="applied-badge">✓ Already Applied</span>' : 
+                            `<a href="javascript:void(0)" onclick="applyScholarship(${item.id})" class="apply-btn">📝 Apply Now</a>`
+                        }
+                        <p class="portal-instruction">💡 Click Apply to submit your application. You'll need to be logged in.</p>
                     </div>
                 `;
             });
@@ -170,6 +578,27 @@ document.getElementById("scholarshipForm").addEventListener("submit", function(e
 
         document.getElementById("results").innerHTML = output;
     });
+});
+
+function applyScholarship(scholarshipId) {
+    fetch("/apply/" + scholarshipId, {
+        method: "POST"
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+        if (data.success) {
+            // Reload to show updated status
+            document.getElementById("scholarshipForm").dispatchEvent(new Event('submit'));
+        }
+    });
+}
+
+// Close modal when clicking outside
+document.getElementById('loginModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeLoginModal();
+    }
 });
 </script>
 

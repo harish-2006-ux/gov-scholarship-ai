@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Karnataka Scholarship Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .profile-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .profile-header {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+            font-weight: 600;
+        }
+
+        .profile-info h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .profile-info p {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .profile-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-outline {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .digilocker-section {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .digilocker-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .digilocker-status {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+
+        .digilocker-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #00d4ff 0%, #7b2ff7 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+        }
+
+        .digilocker-info {
+            flex: 1;
+        }
+
+        .digilocker-info h3 {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .digilocker-info p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-connected {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-disconnected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .scholarship-sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+        }
+
+        .scholarship-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .scholarship-card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .scholarship-item {
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .scholarship-item.awarded {
+            border-left-color: #28a745;
+            background: #f0fff4;
+        }
+
+        .scholarship-item h3 {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .scholarship-meta {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .meta-tag {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .meta-tag.status {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .meta-tag.status.approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .meta-tag.verified {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .scholarship-notes {
+            font-size: 13px;
+            color: #666;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .empty-state svg {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-actions {
+                margin-left: 0;
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .scholarship-sections {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="profile-avatar">
+                {{ user.first_name[0].upper() }}{{ user.last_name[0].upper() if user.last_name else '' }}
+            </div>
+            <div class="profile-info">
+                <h1>{{ user.first_name }} {{ user.last_name }}</h1>
+                <p>{{ user.email }}</p>
+                <p>📱 {{ user.phone or 'Not provided' }}</p>
+                <p>📍 {{ user.district or 'Not set' }} | 🎓 {{ user.caste or 'Not set' }}</p>
+            </div>
+            <div class="profile-actions">
+                <a href="/profile/edit" class="btn btn-outline">✏️ Edit Profile</a>
+                <a href="/" class="btn btn-primary">🏠 Home</a>
+                <a href="/logout" class="btn btn-danger">🚪 Logout</a>
+            </div>
+        </div>
+
+        <div class="digilocker-section">
+            <h2>🔐 DigiLocker Integration</h2>
+            <div class="digilocker-status">
+                <div class="digilocker-icon">📁</div>
+                <div class="digilocker-info">
+                    <h3>DigiLocker Account</h3>
+                    {% if user.digilocker_linked %}
+                        <p>Connected - ID: {{ user.digilocker_id }}</p>
+                    {% else %}
+                        <p>Connect your DigiLocker to automatically fetch documents</p>
+                    {% endif %}
+                </div>
+                {% if user.digilocker_linked %}
+                    <span class="status-badge status-connected">✓ Connected</span>
+                    <button onclick="disconnectDigilocker()" class="btn btn-outline">Disconnect</button>
+                {% else %}
+                    <span class="status-badge status-disconnected">✗ Not Connected</span>
+                    <button onclick="connectDigilocker()" class="btn btn-primary">Connect DigiLocker</button>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="scholarship-sections">
+            <div class="scholarship-card">
+                <h2>📋 Applied Scholarships</h2>
+                {% if applied_scholarships %}
+                    {% for app in applied_scholarships %}
+                        <div class="scholarship-item">
+                            <h3>{{ app.scholarship_name }}</h3>
+                            <div class="scholarship-meta">
+                                <span class="meta-tag status">{{ app.status }}</span>
+                                <span class="meta-tag">📅 {{ app.application_date }}</span>
+                                {% if app.documents_verified %}
+                                    <span class="meta-tag verified">✓ Verified</span>
+                                {% endif %}
+                            </div>
+                            {% if app.notes %}
+                                <p class="scholarship-notes">{{ app.notes }}</p>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <p>No applications yet</p>
+                        <a href="/" class="btn btn-primary" style="margin-top: 15px;">Find Scholarships</a>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="scholarship-card">
+                <h2>🏆 Awarded Scholarships</h2>
+                {% if awarded_scholarships %}
+                    {% for app in awarded_scholarships %}
+                        <div class="scholarship-item awarded">
+                            <h3>{{ app.scholarship_name }}</h3>
+                            <div class="scholarship-meta">
+                                <span class="meta-tag status approved">✓ {{ app.status }}</span>
+                                <span class="meta-tag">📅 {{ app.application_date }}</span>
+                            </div>
+                            <p class="scholarship-notes">🎉 Congratulations! You have been awarded this scholarship.</p>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                        </svg>
+                        <p>No awarded scholarships yet</p>
+                        <p style="font-size: 13px; margin-top: 5px;">Keep applying to get awarded!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function connectDigilocker() {
+            if (confirm('Connect to DigiLocker? This will link your DigiLocker account for document verification.')) {
+                fetch('/digilocker/connect')
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.message);
+                        if (data.success) {
+                            location.reload();
+                        }
+                    });
+            }
+        }
+
+        function disconnectDigilocker() {
+            if (confirm('Disconnect DigiLocker? You will need to manually upload documents.')) {
+                fetch('/digilocker/disconnect')
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.message);
+                        if (data.success) {
+                            location.reload();
+                        }
+                    });
+            }
+        }
+    </script>
+</body>
+</html>
