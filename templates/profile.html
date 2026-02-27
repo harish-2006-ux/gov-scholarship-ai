@@ -305,27 +305,6 @@
             </div>
         </div>
 
-        <div class="digilocker-section">
-            <h2>🔐 DigiLocker Integration</h2>
-            <div class="digilocker-status">
-                <div class="digilocker-icon">📁</div>
-                <div class="digilocker-info">
-                    <h3>DigiLocker Account</h3>
-                    {% if user.digilocker_linked %}
-                        <p>Connected - ID: {{ user.digilocker_id }}</p>
-                    {% else %}
-                        <p>Connect your DigiLocker to automatically fetch documents</p>
-                    {% endif %}
-                </div>
-                {% if user.digilocker_linked %}
-                    <span class="status-badge status-connected">✓ Connected</span>
-                    <button onclick="disconnectDigilocker()" class="btn btn-outline">Disconnect</button>
-                {% else %}
-                    <span class="status-badge status-disconnected">✗ Not Connected</span>
-                    <button onclick="connectDigilocker()" class="btn btn-primary">Connect DigiLocker</button>
-                {% endif %}
-            </div>
-        </div>
 
         <div class="scholarship-sections">
             <div class="scholarship-card">

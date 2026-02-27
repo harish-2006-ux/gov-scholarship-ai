@@ -368,6 +368,7 @@
     <div class="header">
         <h1>🎓 Karnataka Scholarship Portal</h1>
         <div class="header-actions">
+            <a href="/stats" class="btn btn-outline">📊 Statistics</a>
             {% if user_logged_in %}
                 <span class="user-greeting">Welcome, {{ session.get('user_name', 'User') }}!</span>
                 <a href="/profile" class="btn btn-outline">👤 My Profile</a>
@@ -418,7 +419,9 @@
                     <select id="course">
                         <option value="School">School (Class 1-10)</option>
                         <option value="PUC">PUC</option>
-                        <option value="Degree">Degree</option>
+                        <option value="Undergraduate">Undergraduate</option>
+                        <option value="Postgraduate">Postgraduate</option>
+                        <option value="PhD">PhD</option>
                     </select>
                 </div>
 
@@ -566,10 +569,7 @@ document.getElementById("scholarshipForm").addEventListener("submit", function(e
                             <span class="verified-badge">🟢 Official Portal</span>
                         </div>
 
-                        ${item.already_applied ? 
-                            '<span class="applied-badge">✓ Already Applied</span>' : 
-                            `<a href="javascript:void(0)" onclick="applyScholarship(${item.id})" class="apply-btn">📝 Apply Now</a>`
-                        }
+<a href="javascript:void(0)" onclick="applyScholarship(${item.id}, '${item.url}')" class="apply-btn">📝 Apply Now</a>
                         <p class="portal-instruction">💡 Click Apply to submit your application. You'll need to be logged in.</p>
                     </div>
                 `;
@@ -580,18 +580,16 @@ document.getElementById("scholarshipForm").addEventListener("submit", function(e
     });
 });
 
-function applyScholarship(scholarshipId) {
-    fetch("/apply/" + scholarshipId, {
-        method: "POST"
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert(data.message);
-        if (data.success) {
-            // Reload to show updated status
-            document.getElementById("scholarshipForm").dispatchEvent(new Event('submit'));
+function applyScholarship(scholarshipId, officialUrl) {
+    // Redirect to the official government scholarship portal
+    if (officialUrl) {
+        const confirmApply = confirm("You will be redirected to the official government scholarship portal to complete your application. Do you want to continue?");
+        if (confirmApply) {
+            window.open(officialUrl, '_blank');
         }
-    });
+    } else {
+        alert("Official portal URL not available. Please visit the scholarship portal directly.");
+    }
 }
 
 // Close modal when clicking outside

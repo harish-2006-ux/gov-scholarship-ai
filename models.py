@@ -38,17 +38,14 @@ class User(Base):
     district = Column(String(100))
     income = Column(Float, default=0)
     course = Column(String(50))  # School, PUC, Degree
-    
-    # DigiLocker integration
-    digilocker_linked = Column(Boolean, default=False)
-    digilocker_id = Column(String(100))
-    
+
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # Relationships
     applications = relationship("Application", back_populates="user")
+    visits = relationship("Visit", back_populates="user")
 
 class Application(Base):
     __tablename__ = "applications"
@@ -64,5 +61,17 @@ class Application(Base):
     # Relationships
     user = relationship("User", back_populates="applications")
     scholarship = relationship("Scholarship")
+
+class Visit(Base):
+    __tablename__ = "visits"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    visit_date = Column(DateTime, default=datetime.utcnow)
+    page = Column(String(100))
+    action = Column(String(100))
+    
+    # Relationships
+    user = relationship("User", back_populates="visits")
 
 Session = sessionmaker(bind=engine)

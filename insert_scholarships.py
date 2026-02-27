@@ -177,7 +177,7 @@ scholarships = [
         required_documents="Income certificate, Caste certificate, Previous marksheet, Bank account details",
         official_url="https://scholarships.gov.in/obc"
     ),
-    Scholarship(
+Scholarship(
         name="Merit Cum Means Scholarship (Minority - Central)",
         description="Merit-cum-means scholarship for minority students pursuing degree programmes.",
         min_age=17,
@@ -188,7 +188,7 @@ scholarships = [
         course_allowed="Degree",
         district_allowed="All",
         required_documents="Income certificate, Minority certificate, Merit marksheet, Bank account details",
-        official_url="https://scholarships.gov.in/mcm"
+        official_url="https://scholarships.gov.in/"
     ),
     Scholarship(
         name="Karnataka Labour Welfare Scholarship",
@@ -242,7 +242,7 @@ scholarships = [
         required_documents="Income certificate, Caste certificate, Previous marksheet, Bank account details",
         official_url="https://karnataka.gov.in/yasasi"
     ),
-    Scholarship(
+Scholarship(
         name="PM YASASVI Post-Matric Scholarship (OBC, EBC, DNT)",
         description="Post-matric scholarship for OBC, EBC and DNT students in Karnataka.",
         min_age=16,
@@ -253,7 +253,7 @@ scholarships = [
         course_allowed="Both",
         district_allowed="All",
         required_documents="Income certificate, Caste certificate, Previous marksheet, Bank account details",
-        official_url="https://karnataka.gov.in/yasasi"
+        official_url="https://yet.nta.ac.in/"
     ),
 ]
 

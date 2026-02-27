@@ -1,22 +1,21 @@
 from flask import Flask, request, jsonify, render_template, session, redirect, url_for, flash
-from models import Session, Scholarship, User, Application, Base, engine
+from models import Session, Scholarship, User, Application, Visit, Base, engine
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import os
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-
 app = Flask(__name__)
 app.secret_key = "scholarship_portal_secret_key_2024"
 
-# Email Configuration (SMTP) - UPDATE THESE WITH YOUR EMAIL SETTINGS
-# For Gmail: Use App Password (not your regular password)
+# Email Configuration (SMTP)
+# For Gmail: Use App Password 
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
-SMTP_USERNAME = "your-email@gmail.com"  # Change this to your email
-SMTP_PASSWORD = "your-app-password"  # Change this to your app password
-FROM_EMAIL = "your-email@gmail.com"  # Change this to your email
+SMTP_USERNAME =  "hhareeshvm@gmail.com"  # Change this to my email
+SMTP_PASSWORD = "drvl lpem oapf tipc"  # Change this to your my password
+FROM_EMAIL = "hhareesh@gmail.com"  # Change this to your email
 
 def send_email(to_email, subject, body):
     """Send an email using SMTP"""
@@ -52,7 +51,6 @@ def send_welcome_email(user_email, user_name):
             <li>Browse and search for scholarships</li>
             <li>Apply for eligible scholarships</li>
             <li>Track your application status</li>
-            <li>Connect your DigiLocker for document verification</li>
         </ul>
         <p>Start exploring scholarships now: <a href="http://127.0.0.1:5000/">Karnataka Scholarship Portal</a></p>
         <br>
@@ -110,7 +108,6 @@ def send_scholarship_approved(user_email, user_name, scholarship_name):
         <h3>Next Steps:</h3>
         <ol>
             <li>Check your registered bank account for scholarship disbursement</li>
-            <li>Keep your DigiLocker documents updated</li>
             <li>Regularly check your profile for any updates</li>
         </ol>
         <p>View your awarded scholarships: <a href="http://127.0.0.1:5000/profile">My Profile</a></p>
@@ -153,15 +150,12 @@ def check_eligibility(user_profile, scholarship):
         return None
 
     # Course
-    # Handle "School" course (for Pre-Matric scholarships)
-    # Also handle "Both" which means both PUC and Degree (but not School)
     if scholarship.course_allowed == "School":
         if course != "School":
             return None
     elif scholarship.course_allowed != "Both":
         if course != scholarship.course_allowed:
             return None
-    # If scholarship.course_allowed is "Both", it applies to PUC and Degree, not School
 
     # Caste
     if scholarship.caste_allowed != "Any":
@@ -243,6 +237,12 @@ def login():
             session['user_id'] = user.id
             session['user_name'] = user.first_name
             session['user_email'] = user.email
+            
+            # Track login visit
+            visit = Visit(user_id=user.id, page="login", action="logged_in")
+            db_session.add(visit)
+            db_session.commit()
+            
             return jsonify({"success": True, "message": "Login successful!"})
         else:
             return jsonify({"success": False, "message": "Invalid email or password"}), 401
@@ -323,35 +323,7 @@ def edit_profile():
     finally:
         db_session.close()
 
-@app.route("/digilocker/connect")
-def digilocker_connect():
-    if 'user_id' not in session:
-        return jsonify({"success": False, "message": "Please login first"}), 401
-    
-    db_session = Session()
-    try:
-        user = db_session.query(User).filter_by(id=session['user_id']).first()
-        user.digilocker_linked = True
-        user.digilocker_id = "DigiLocker_" + str(user.id)
-        db_session.commit()
-        return jsonify({"success": True, "message": "DigiLocker connected successfully!"})
-    finally:
-        db_session.close()
 
-@app.route("/digilocker/disconnect")
-def digilocker_disconnect():
-    if 'user_id' not in session:
-        return jsonify({"success": False, "message": "Please login first"}), 401
-    
-    db_session = Session()
-    try:
-        user = db_session.query(User).filter_by(id=session['user_id']).first()
-        user.digilocker_linked = False
-        user.digilocker_id = None
-        db_session.commit()
-        return jsonify({"success": True, "message": "DigiLocker disconnected"})
-    finally:
-        db_session.close()
 
 @app.route("/apply/<int:scholarship_id>", methods=["POST"])
 def apply_scholarship(scholarship_id):
@@ -456,15 +428,6 @@ def recommend():
         score = check_eligibility(user_data, scheme)
 
         if score is not None:
-            # Check if user already applied
-            already_applied = False
-            if 'user_id' in session:
-                existing = db_session.query(Application).filter_by(
-                    user_id=session['user_id'],
-                    scholarship_id=scheme.id
-                ).first()
-                already_applied = existing is not None
-
             results.append({
                 "id": scheme.id,
                 "name": scheme.name,
@@ -472,8 +435,7 @@ def recommend():
                 "description": scheme.description,
                 "documents": scheme.required_documents,
                 "url": scheme.official_url,
-                "portal": "Karnataka" if scheme.official_url and "karnataka" in scheme.official_url.lower() else "National",
-                "already_applied": already_applied
+                "portal": "Karnataka" if scheme.official_url and "karnataka" in scheme.official_url.lower() else "National"
             })
 
     results.sort(key=lambda x: x["score"], reverse=True)
@@ -484,6 +446,116 @@ def calculate_age(birth_date):
         today = datetime.now()
         return today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
     return 18
+
+# -------------------------------
+# Statistics API Endpoints
+# -------------------------------
+
+@app.route("/api/stats/summary")
+def stats_summary():
+    """Get overall summary statistics"""
+    db_session = Session()
+    try:
+        total_scholarships = db_session.query(Scholarship).count()
+        total_users = db_session.query(User).count()
+        total_applications = db_session.query(Application).count()
+        approved = db_session.query(Application).filter_by(status="Approved").count()
+        pending = db_session.query(Application).filter_by(status="Applied").count()
+        total_visits = db_session.query(Visit).count()
+        return jsonify({
+            "total_scholarships": total_scholarships,
+            "total_users": total_users,
+            "total_applications": total_applications,
+            "approved_applications": approved,
+            "pending_applications": pending,
+            "total_visits": total_visits,
+            "approval_rate": round(approved / total_applications * 100, 2) if total_applications > 0 else 0
+        })
+    finally:
+        db_session.close()
+
+@app.route("/api/stats/scholarships")
+def stats_scholarships():
+    """Get scholarship distribution statistics"""
+    db_session = Session()
+    try:
+        scholarships = db_session.query(Scholarship).all()
+        course_counts = {}
+        caste_counts = {}
+        for s in scholarships:
+            course = s.course_allowed or "Unknown"
+            course_counts[course] = course_counts.get(course, 0) + 1
+            caste = s.caste_allowed or "Unknown"
+            caste_counts[caste] = caste_counts.get(caste, 0) + 1
+        return jsonify({"total": len(scholarships), "by_course": course_counts, "by_caste": caste_counts})
+    finally:
+        db_session.close()
+
+@app.route("/api/stats/applications")
+def stats_applications():
+    """Get application statistics"""
+    db_session = Session()
+    try:
+        applications = db_session.query(Application).all()
+        status_counts = {}
+        for app in applications:
+            status = app.status or "Unknown"
+            status_counts[status] = status_counts.get(status, 0) + 1
+        return jsonify({"total": len(applications), "by_status": status_counts})
+    finally:
+        db_session.close()
+
+@app.route("/api/stats/users")
+def stats_users():
+    """Get user demographics"""
+    db_session = Session()
+    try:
+        users = db_session.query(User).all()
+        gender_counts = {}
+        district_counts = {}
+        for user in users:
+            gender = user.gender or "Not Specified"
+            gender_counts[gender] = gender_counts.get(gender, 0) + 1
+            district = user.district or "Not Specified"
+            district_counts[district] = district_counts.get(district, 0) + 1
+        return jsonify({"total": len(users), "by_gender": gender_counts, "by_district": district_counts})
+    finally:
+        db_session.close()
+
+@app.route("/api/stats/applications-by-user")
+def stats_applications_by_user():
+    """Get application counts grouped by user"""
+    db_session = Session()
+    try:
+        applications = db_session.query(Application).all()
+        user_application_counts = {}
+        
+        for app in applications:
+            user_id = app.user_id
+            if user_id:
+                user_application_counts[user_id] = user_application_counts.get(user_id, 0) + 1
+        
+        # Also get user names for better labels
+        user_names = {}
+        for user_id in user_application_counts.keys():
+            user = db_session.query(User).filter_by(id=user_id).first()
+            if user:
+                user_names[user_id] = f"{user.first_name} {user.last_name or ''}".strip()
+        
+        # Create labels with user names
+        labeled_counts = {}
+        for user_id, count in user_application_counts.items():
+            name = user_names.get(user_id, f"User {user_id}")
+            labeled_counts[name] = count
+        
+        return jsonify({"by_user": labeled_counts})
+    finally:
+        db_session.close()
+
+@app.route("/stats")
+def stats_dashboard():
+    """Render the statistics dashboard page"""
+    return render_template("stats.html")
 
 # -------------------------------
 # Run App
