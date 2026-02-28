@@ -74,4 +74,33 @@ class Visit(Base):
     # Relationships
     user = relationship("User", back_populates="visits")
 
+class UploadedDocument(Base):
+    __tablename__ = "uploaded_documents"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    application_id = Column(Integer, ForeignKey("applications.id"), nullable=True)
+    document_type = Column(String(100))  # income_certificate, caste_certificate, etc.
+    file_name = Column(String(255))
+    file_path = Column(String(500))
+    uploaded_at = Column(DateTime, default=datetime.utcnow)
+    verified = Column(Boolean, default=False)
+    
+    # Relationships
+    user = relationship("User")
+
+class DeadlineAlert(Base):
+    __tablename__ = "deadline_alerts"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    scholarship_id = Column(Integer, ForeignKey("scholarships.id"))
+    alert_date = Column(DateTime, default=datetime.utcnow)
+    days_before = Column(Integer, default=7)  # Alert 7 days before deadline
+    notified = Column(Boolean, default=False)
+    
+    # Relationships
+    user = relationship("User")
+    scholarship = relationship("Scholarship")
+
 Session = sessionmaker(bind=engine)

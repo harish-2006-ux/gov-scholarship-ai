@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Documents & Alerts - Karnataka Scholarship Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --primary: #4CAF50;
+            --primary-dark: #388E3C;
+            --secondary: #FF9800;
+            --dark: #1a1a1a;
+            --light: #f5f5f5;
+            --gray: #666;
+            --white: #ffffff;
+        }
+
+        body {
+            background: #f0f2f5;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background: var(--white);
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+        }
+
+        .logo-text {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .logo-text span {
+            color: var(--primary);
+        }
+
+        nav {
+            display: flex;
+            gap: 30px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            font-size: 15px;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--primary);
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            color: var(--gray);
+        }
+
+        /* Section Card */
+        .section-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .section-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .section-header h2 {
+            font-size: 20px;
+            color: var(--dark);
+        }
+
+        /* Form */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--dark);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background: #f9f9f9;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        /* List Items */
+        .item-list {
+            margin-top: 20px;
+        }
+
+        .item-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background: #f9f9f9;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+
+        .item-card:hover {
+            background: #f0f0f0;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-info h4 {
+            font-size: 15px;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .item-info p {
+            font-size: 13px;
+            color: var(--gray);
+        }
+
+        .item-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .badge-warning {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .badge-pending {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .btn-delete {
+            padding: 8px 15px;
+            background: #ffebee;
+            color: #c62828;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-delete:hover {
+            background: #ffcdd2;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 40px;
+            color: #ddd;
+            margin-bottom: 15px;
+        }
+
+        /* Alert Message */
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .alert-error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+
+        @media (max-width: 768px) {
+            .item-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .btn-delete {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+    <div class="header-content">
+        <a href="/" class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div class="logo-text">Karnataka<span>Scholarship</span></div>
+        </a>
+        
+        <nav>
+            <a href="/">Home</a>
+            <a href="/stats">Statistics</a>
+            <a href="/profile">My Profile</a>
+        </nav>
+        
+        <div class="header-buttons">
+            <a href="/profile" class="btn btn-outline">My Profile</a>
+            <a href="/logout" class="btn btn-danger">Logout</a>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<div class="main-content">
+    <div class="page-header">
+        <h1>📄 My Documents & Alerts</h1>
+        <p>Manage your uploaded documents and deadline alerts</p>
+    </div>
+
+    <!-- Document Upload Section -->
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-icon">
+                <i class="fas fa-upload"></i>
+            </div>
+            <h2>Upload Documents</h2>
+        </div>
+
+        <div id="uploadAlert" class="alert"></div>
+
+        <form id="uploadForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Document Type</label>
+                    <select id="documentType" required>
+                        <option value="">Select document type</option>
+                        <option value="income_certificate">Income Certificate</option>
+                        <option value="caste_certificate">Caste Certificate</option>
+                        <option value="aadhaar">Aadhaar Card</option>
+                        <option value="marks_card">Marks Card</option>
+                        <option value="photo">Passport Photo</option>
+                        <option value="bank_passbook">Bank Passbook</option>
+                        <option value="domicile">Domicile Certificate</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Choose File</label>
+                    <input type="file" id="fileInput" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx" required>
+                </div>
+            </div>
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-cloud-upload-alt"></i> Upload Document
+            </button>
+        </form>
+
+        <div class="item-list" id="documentList">
+            <h3 style="font-size: 16px; color: var(--dark); margin-bottom: 15px;">My Uploaded Documents</h3>
+            <div id="documentsContainer">
+                <div class="empty-state">
+                    <i class="fas fa-folder-open"></i>
+                    <p>No documents uploaded yet</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deadline Alerts Section -->
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-icon">
+                <i class="fas fa-bell"></i>
+            </div>
+            <h2>Deadline Alerts</h2>
+        </div>
+
+        <div id="alertMessage" class="alert"></div>
+
+        <form id="alertForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Scholarship ID</label>
+                    <input type="number" id="scholarshipId" placeholder="Enter scholarship ID" required>
+                </div>
+                <div class="form-group">
+                    <label>Remind me before (days)</label>
+                    <input type="number" id="daysBefore" value="7" min="1" max="30">
+                </div>
+            </div>
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-bell"></i> Set Alert
+            </button>
+        </form>
+
+        <div class="item-list" id="alertList">
+            <h3 style="font-size: 16px; color: var(--dark); margin-bottom: 15px;">My Deadline Alerts</h3>
+            <div id="alertsContainer">
+                <div class="empty-state">
+                    <i class="fas fa-bell-slash"></i>
+                    <p>No deadline alerts set yet</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Load documents on page load
+    loadDocuments();
+    loadAlerts();
+
+    // Upload Document
+    document.getElementById('uploadForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData();
+        formData.append('file', document.getElementById('fileInput').files[0]);
+        formData.append('document_type', document.getElementById('documentType').value);
+
+        fetch('/upload/document', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            const alertEl = document.getElementById('uploadAlert');
+            if (data.success) {
+                alertEl.className = 'alert alert-success';
+                alertEl.textContent = data.message;
+                alertEl.style.display = 'block';
+                loadDocuments();
+                document.getElementById('uploadForm').reset();
+            } else {
+                alertEl.className = 'alert alert-error';
+                alertEl.textContent = data.message;
+                alertEl.style.display = 'block';
+            }
+            setTimeout(() => alertEl.style.display = 'none', 5000);
+        });
+    });
+
+    // Set Deadline Alert
+    document.getElementById('alertForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const data = {
+            scholarship_id: parseInt(document.getElementById('scholarshipId').value),
+            days_before: parseInt(document.getElementById('daysBefore').value)
+        };
+
+        fetch('/api/set-deadline-alert', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            const alertEl = document.getElementById('alertMessage');
+            if (data.success) {
+                alertEl.className = 'alert alert-success';
+                alertEl.textContent = data.message;
+                alertEl.style.display = 'block';
+                loadAlerts();
+                document.getElementById('alertForm').reset();
+            } else {
+                alertEl.className = 'alert alert-error';
+                alertEl.textContent = data.message;
+                alertEl.style.display = 'block';
+            }
+            setTimeout(() => alertEl.style.display = 'none', 5000);
+        });
+    });
+
+    // Load Documents
+    function loadDocuments() {
+        fetch('/api/my-documents')
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('documentsContainer');
+            if (data.documents && data.documents.length > 0) {
+                let html = '';
+                data.documents.forEach(doc => {
+                    html += `
+                        <div class="item-card">
+                            <div class="item-info">
+                                <h4>${doc.document_type.replace('_', ' ').toUpperCase()}</h4>
+                                <p>${doc.file_name} - ${doc.uploaded_at || 'Recently'}</p>
+                            </div>
+                            <span class="item-badge ${doc.verified ? 'badge-success' : 'badge-pending'}">
+                                ${doc.verified ? '✓ Verified' : 'Pending'}
+                            </span>
+                            <button class="btn-delete" onclick="deleteDocument(${doc.id})">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            }
+        });
+    }
+
+    // Load Alerts
+    function loadAlerts() {
+        fetch('/api/my-deadline-alerts')
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('alertsContainer');
+            if (data.alerts && data.alerts.length > 0) {
+                let html = '';
+                data.alerts.forEach(alert => {
+                    html += `
+                        <div class="item-card">
+                            <div class="item-info">
+                                <h4>Scholarship #${alert.scholarship_id}</h4>
+                                <p>Remind ${alert.days_before} days before deadline</p>
+                            </div>
+                            <span class="item-badge ${alert.notified ? 'badge-success' : 'badge-warning'}">
+                                ${alert.notified ? 'Notified' : 'Active'}
+                            </span>
+                            <button class="btn-delete" onclick="removeAlert(${alert.scholarship_id})">
+                                <i class="fas fa-trash"></i> Remove
+                            </button>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            }
+        });
+    }
+
+    // Delete Document
+    function deleteDocument(docId) {
+        if (confirm('Are you sure you want to delete this document?')) {
+            fetch('/api/delete-document/' + docId, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                const alertEl = document.getElementById('uploadAlert');
+                alertEl.className = 'alert ' + (data.success ? 'alert-success' : 'alert-error');
+                alertEl.textContent = data.message;
+                alertEl.style.display = 'block';
+                loadDocuments();
+                setTimeout(() => alertEl.style.display = 'none', 5000);
+            });
+        }
+    }
+
+    // Remove Alert
+    function removeAlert(scholarshipId) {
+        if (confirm('Are you sure you want to remove this alert?')) {
+            fetch('/api/remove-deadline-alert/' + scholarshipId, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                const alertEl = document.getElementById('alertMessage');
+                alertEl.className = 'alert ' + (data.success ? 'alert-success' : 'alert-error');
+                alertEl.textContent = data.message;
+                alertEl.style.display = 'block';
+                loadAlerts();
+                setTimeout(() => alertEl.style.display = 'none', 5000);
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

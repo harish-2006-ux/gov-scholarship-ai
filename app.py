@@ -1,13 +1,25 @@
-from flask import Flask, request, jsonify, render_template, session, redirect, url_for, flash
-from models import Session, Scholarship, User, Application, Visit, Base, engine
+from flask import Flask, request, jsonify, render_template, session, redirect, url_for, flash, send_from_directory
+from models import Session, Scholarship, User, Application, Visit, UploadedDocument, DeadlineAlert, Base, engine
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+from werkzeug.utils import secure_filename
+from datetime import datetime, timedelta
 import os
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+
 app = Flask(__name__)
 app.secret_key = "scholarship_portal_secret_key_2024"
+
+# Upload configuration
+UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
+ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg', 'doc', 'docx'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
+
+# Create upload folder if it doesn't exist
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
 
 # Email Configuration (SMTP)
 # For Gmail: Use App Password 
@@ -556,6 +568,252 @@ def stats_applications_by_user():
 def stats_dashboard():
     """Render the statistics dashboard page"""
     return render_template("stats.html")
+
+@app.route("/documents")
+def documents_page():
+    """Render the documents and alerts page"""
+    if 'user_id' not in session:
+        return redirect(url_for('signup'))
+    return render_template("documents.html")
+
+# -------------------------------
+# Document Upload Endpoints
+# -------------------------------
+
+def allowed_file(filename):
+    """Check if file extension is allowed"""
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route("/upload/document", methods=["POST"])
+def upload_document():
+    """Upload a document for scholarship application"""
+    if 'user_id' not in session:
+        return jsonify({"success": False, "message": "Please login to upload documents"}), 401
+    
+    if 'file' not in request.files:
+        return jsonify({"success": False, "message": "No file selected"}), 400
+    
+    file = request.files['file']
+    document_type = request.form.get('document_type', 'other')
+    application_id = request.form.get('application_id')
+    
+    if file.filename == '':
+        return jsonify({"success": False, "message": "No file selected"}), 400
+    
+    if file and allowed_file(file.filename):
+        # Secure the filename
+        filename = secure_filename(file.filename)
+        
+        # Create user folder
+        user_folder = os.path.join(app.config['UPLOAD_FOLDER'], str(session['user_id']))
+        if not os.path.exists(user_folder):
+            os.makedirs(user_folder)
+        
+        # Add timestamp to filename to make it unique
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        filename = f"{timestamp}_{filename}"
+        
+        # Save the file
+        file_path = os.path.join(user_folder, filename)
+        file.save(file_path)
+        
+        # Save to database
+        db_session = Session()
+        try:
+            doc = UploadedDocument(
+                user_id=session['user_id'],
+                application_id=int(application_id) if application_id else None,
+                document_type=document_type,
+                file_name=filename,
+                file_path=file_path
+            )
+            db_session.add(doc)
+            db_session.commit()
+            
+            return jsonify({
+                "success": True, 
+                "message": "Document uploaded successfully!",
+                "document_id": doc.id
+            })
+        except Exception as e:
+            db_session.rollback()
+            return jsonify({"success": False, "message": str(e)}), 500
+        finally:
+            db_session.close()
+    
+    return jsonify({"success": False, "message": "Invalid file type"}), 400
+
+@app.route("/api/my-documents")
+def get_my_documents():
+    """Get all documents uploaded by the current user"""
+    if 'user_id' not in session:
+        return jsonify({"success": False, "message": "Please login"}), 401
+    
+    db_session = Session()
+    try:
+        docs = db_session.query(UploadedDocument).filter_by(user_id=session['user_id']).all()
+        documents = []
+        for doc in docs:
+            documents.append({
+                "id": doc.id,
+                "document_type": doc.document_type,
+                "file_name": doc.file_name,
+                "uploaded_at": doc.uploaded_at.strftime('%Y-%m-%d %H:%M') if doc.uploaded_at else None,
+                "verified": doc.verified
+            })
+        return jsonify({"success": True, "documents": documents})
+    finally:
+        db_session.close()
+
+@app.route("/api/delete-document/<int:doc_id>", methods=["DELETE"])
+def delete_document(doc_id):
+    """Delete an uploaded document"""
+    if 'user_id' not in session:
+        return jsonify({"success": False, "message": "Please login"}), 401
+    
+    db_session = Session()
+    try:
+        doc = db_session.query(UploadedDocument).filter_by(id=doc_id, user_id=session['user_id']).first()
+        if not doc:
+            return jsonify({"success": False, "message": "Document not found"}), 404
+        
+        # Delete file from filesystem
+        if os.path.exists(doc.file_path):
+            os.remove(doc.file_path)
+        
+        # Delete from database
+        db_session.delete(doc)
+        db_session.commit()
+        
+        return jsonify({"success": True, "message": "Document deleted successfully"})
+    except Exception as e:
+        db_session.rollback()
+        return jsonify({"success": False, "message": str(e)}), 500
+    finally:
+        db_session.close()
+
+# -------------------------------
+# Deadline Alert Endpoints
+# -------------------------------
+
+@app.route("/api/set-deadline-alert", methods=["POST"])
+def set_deadline_alert():
+    """Set a deadline alert for a scholarship"""
+    if 'user_id' not in session:
+        return jsonify({"success": False, "message": "Please login"}), 401
+    
+    data = request.json
+    scholarship_id = data.get('scholarship_id')
+    days_before = data.get('days_before', 7)
+    
+    if not scholarship_id:
+        return jsonify({"success": False, "message": "Scholarship ID required"}), 400
+    
+    db_session = Session()
+    try:
+        # Check if alert already exists
+        existing = db_session.query(DeadlineAlert).filter_by(
+            user_id=session['user_id'],
+            scholarship_id=scholarship_id
+        ).first()
+        
+        if existing:
+            existing.days_before = days_before
+            db_session.commit()
+            return jsonify({"success": True, "message": "Alert updated successfully!"})
+        
+        # Create new alert
+        alert = DeadlineAlert(
+            user_id=session['user_id'],
+            scholarship_id=scholarship_id,
+            days_before=days_before
+        )
+        db_session.add(alert)
+        db_session.commit()
+        
+        return jsonify({"success": True, "message": "Deadline alert set successfully!"})
+    except Exception as e:
+        db_session.rollback()
+        return jsonify({"success": False, "message": str(e)}), 500
+    finally:
+        db_session.close()
+
+@app.route("/api/remove-deadline-alert/<int:scholarship_id>", methods=["DELETE"])
+def remove_deadline_alert(scholarship_id):
+    """Remove a deadline alert"""
+    if 'user_id' not in session:
+        return jsonify({"success": False, "message": "Please login"}), 401
+    
+    db_session = Session()
+    try:
+        alert = db_session.query(DeadlineAlert).filter_by(
+            user_id=session['user_id'],
+            scholarship_id=scholarship_id
+        ).first()
+        
+        if not alert:
+            return jsonify({"success": False, "message": "Alert not found"}), 404
+        
+        db_session.delete(alert)
+        db_session.commit()
+        
+        return jsonify({"success": True, "message": "Alert removed successfully"})
+    except Exception as e:
+        db_session.rollback()
+        return jsonify({"success": False, "message": str(e)}), 500
+    finally:
+        db_session.close()
+
+@app.route("/api/my-deadline-alerts")
+def get_my_deadline_alerts():
+    """Get all deadline alerts for the current user"""
+    if 'user_id' not in session:
+        return jsonify({"success": False, "message": "Please login"}), 401
+    
+    db_session = Session()
+    try:
+        alerts = db_session.query(DeadlineAlert).filter_by(user_id=session['user_id']).all()
+        result = []
+        
+        for alert in alerts:
+            scholarship = db_session.query(Scholarship).filter_by(id=alert.scholarship_id).first()
+            if scholarship:
+                result.append({
+                    "id": alert.id,
+                    "scholarship_id": scholarship.id,
+                    "scholarship_name": scholarship.name,
+                    "days_before": alert.days_before,
+                    "notified": alert.notified
+                })
+        
+        return jsonify({"success": True, "alerts": result})
+    finally:
+        db_session.close()
+
+@app.route("/api/upcoming-deadlines")
+def get_upcoming_deadlines():
+    """Get scholarships that users have set alerts for"""
+    db_session = Session()
+    try:
+        # Get all scholarships that have at least one alert set
+        scholarship_ids_with_alerts = db_session.query(DeadlineAlert.scholarship_id).distinct().all()
+        scholarship_ids = [s[0] for s in scholarship_ids_with_alerts]
+        
+        scholarships = db_session.query(Scholarship).filter(Scholarship.id.in_(scholarship_ids)).all()
+        
+        result = []
+        for s in scholarships:
+            alert_count = db_session.query(DeadlineAlert).filter_by(scholarship_id=s.id).count()
+            result.append({
+                "id": s.id,
+                "name": s.name,
+                "course_allowed": s.course_allowed,
+                "alert_count": alert_count
+            })
+        
+        return jsonify({"success": True, "scholarships": result})
+    finally:
+        db_session.close()
 
 # -------------------------------
 # Run App
